@@ -41,22 +41,30 @@ Chrome ウェブストアでは配布していません。以下いずれかの�
 
 ## 開発
 - `npm run dev` — Vite 開発サーバ（HMR）。
-- `npm run build` — 型チェック（`tsc --noEmit`）＋本番ビルド。
+- `npm run build` — 型チェック（`tsc --noEmit`）＋本番ビルド（`dist/` を生成）。
+- `npm run build:direct` — 回避策なしの素の `tsc --noEmit && vite build`（下記が不要な環境向け）。
 - `npm test` — 検出ロジックの単体テスト（jsdom、ログイン不要）。
 - `npm run gen:icons` — `assets/icon.svg` から `icons/` に PNG(16/48/128) を生成。
-- `npm run pack` — `dist/` を `release/*.zip`（ストア提出用）に固める。
+- `npm run pack` — `dist/` を `release/*.zip`（配布用）に固める。
 - `npm run release` — アイコン生成 → ビルド → zip を一括実行。
 - スタック: Manifest V3 / TypeScript / Vite / @crxjs/vite-plugin / Vitest。
 
-## Chrome ウェブストア公開
-限定公開（Unlisted）での提出を想定。掲載フォームの記入内容・手順は [STORE_LISTING.md](STORE_LISTING.md)、
-プライバシーポリシーは [PRIVACY.md](PRIVACY.md) を参照。
-1. `npm run release` で `release/webike_parts_bridge-v<version>.zip` を生成。
-2. デベロッパー ダッシュボードで新規アイテム作成 → zip アップロード。
-3. STORE_LISTING.md のコピペ用テキストで掲載情報・権限説明・プライバシー申告を記入。
-4. PRIVACY.md を URL 公開してポリシー URL に設定 → 限定公開で審査提出。
+### ビルド環境の注意（Windows）
+`@crxjs/vite-plugin` は Windows 上で 2 つの非互換があり、`npm run build`（[scripts/build.mjs](scripts/build.mjs)）が自動で回避する:
+- **Node のバージョン**: Node **18〜22** が必要（Node 23/24 系ではビルドがクラッシュする）。現行 Node が新しすぎる場合、
+  `build.mjs` は [fnm](https://github.com/Schniz/fnm) が導入した 18〜22 系（例: `fnm install 22`）を自動検出してそれでビルドする。
+- **非ASCIIパス**: プロジェクトのパスに日本語等が含まれるとビルドがクラッシュするため、その場合のみ ASCII の
+  一時ディレクトリにソースをコピー（`node_modules` はジャンクション共有）してビルドし、生成物を `dist/` へ戻す。
+
+一般的な clone 先（ASCII パス）＋ Node 18〜22 なら回避策は発動せず、そのままビルドされる。
+
+## リリース（配布用 ZIP）
+Chrome ウェブストアには申請せず、**GitHub Releases でビルド済み ZIP を配布**する（導入は上記「方法A」）。
+1. 更新時は `package.json` の `version` を上げる。
+2. `npm run release` で `release/webike_parts_bridge-v<version>.zip` を生成。
+3. GitHub の Releases で新規タグ（例 `v0.1.0`）を作成し、その zip を Assets に添付。
 - 権限は `storage` のみ（未使用の activeTab/scripting は削除済み）。ホストアクセスは対象2サイトの
-  content_scripts から付与。自動送信はしない設計（誤発注防止）。
+  content_scripts から付与。自動送信はしない設計（誤発注防止）。データ収集・外部送信なし（[PRIVACY.md](PRIVACY.md)）。
 
 ## 構成
 | パス | 役割 |
