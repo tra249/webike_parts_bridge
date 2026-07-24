@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1173e6"/>
+      <stop offset="1" stop-color="#0846a0"/>
+    </linearGradient>
+  </defs>
+  <!-- 背景（角丸） -->
+  <rect x="0" y="0" width="128" height="128" rx="28" fill="url(#bg)"/>
+  <!-- 部品（ナット/ボルトを表す六角形） -->
+  <g transform="translate(34 64)">
+    <polygon points="0,-19 16.5,-9.5 16.5,9.5 0,19 -16.5,9.5 -16.5,-9.5"
+             fill="#ffd24d" stroke="#0846a0" stroke-width="4" stroke-linejoin="round"/>
+    <circle cx="0" cy="0" r="7" fill="#0846a0"/>
+  </g>
+  <!-- 転記を表す右向き矢印 -->
+  <g fill="#ffffff">
+    <rect x="52" y="55" width="34" height="18" rx="4"/>
+    <polygon points="80,44 104,64 80,84"/>
+  </g>
+</svg>

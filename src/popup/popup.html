@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ヤマハ→Webike 転記</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <header>
+      <h1>ヤマハ→Webike 転記</h1>
+      <p id="meta" class="meta"></p>
+    </header>
+
+    <section id="empty" class="empty hidden">
+      取込済みの部品がありません。<br />
+      ヤマハPC版パーツカタログの「選択部品一覧」を開き、右下の
+      <b>「選択部品を取込」</b>ボタンを押してください。
+    </section>
+
+    <section id="list-section" class="hidden">
+      <table id="parts-table">
+        <thead>
+          <tr>
+            <th>品番</th>
+            <th>部品名</th>
+            <th class="qty-col">数量</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="parts-body"></tbody>
+      </table>
+      <div class="actions">
+        <button id="clear-btn" class="btn btn-danger" type="button">全クリア</button>
+      </div>
+    </section>
+
+    <section class="hint">
+      <p>
+        使い方: ①ヤマハで取込 → ②Webike純正部品ページを開き右下の<b>「取込部品を転記」</b>。
+        送信は自動化しません（内容確認のうえ手動で送信してください）。
+      </p>
+    </section>
+
+    <details class="advanced">
+      <summary>詳細設定（自動検出が外れる場合のセレクタ上書き）</summary>
+      <label>ヤマハ 選択部品一覧テーブル<input id="ov-yamaha" type="text" placeholder="例: table.selected-parts" /></label>
+      <label>Webike 品番入力欄<input id="ov-webike-part" type="text" placeholder='例: input[name^="part_no"]' /></label>
+      <label>Webike 数量入力欄<input id="ov-webike-qty" type="text" placeholder='例: input[name^="qty"]' /></label>
+      <label>Webike メーカー選択<input id="ov-webike-maker" type="text" placeholder="例: select#maker" /></label>
+      <div class="actions">
+        <button id="save-ov-btn" class="btn" type="button">セレクタを保存</button>
+        <span id="ov-status" class="ov-status"></span>
+      </div>
+    </details>
+
+    <script type="module" src="popup.ts"></script>
+  </body>
+</html>

@@ -1,0 +1,6 @@
+# 改行はリポジトリ内では LF に正規化（バイナリは除外）
+* text=auto eol=lf
+
+*.png binary
+*.ico binary
+*.svg text eol=lf

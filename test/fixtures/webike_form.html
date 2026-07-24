@@ -1,0 +1,33 @@
+<!-- Webike純正部品フォームを模した合成HTML（実DOMは未確認・推定構造。フェーズ6で更新） -->
+<form id="genuine-estimate">
+  <label>メーカー
+    <select name="maker" id="maker">
+      <option value="">選択してください</option>
+      <option value="honda">ホンダ</option>
+      <option value="yamaha">ヤマハ</option>
+      <option value="suzuki">スズキ</option>
+      <option value="kawasaki">カワサキ</option>
+    </select>
+  </label>
+
+  <div class="part-rows">
+    <div class="row">
+      <span>1.</span>
+      <input type="text" name="part_no[1]" />
+      <input type="number" name="qty[1]" value="1" />
+    </div>
+    <div class="row">
+      <span>2.</span>
+      <input type="text" name="part_no[2]" />
+      <input type="number" name="qty[2]" value="1" />
+    </div>
+    <div class="row">
+      <span>3.</span>
+      <input type="text" name="part_no[3]" />
+      <input type="number" name="qty[3]" value="1" />
+    </div>
+  </div>
+
+  <button type="button" id="expand">追加フォームを展開する</button>
+  <button type="submit">見積もりを依頼する</button>
+</form>

@@ -1,0 +1,93 @@
+<!-- ヤマハ pick_list_preview.html の実DOM構造を反映（2026-07 取得の #flat-table を簡略化）。
+     ポイント: 隠し列 model-name(表示none, 値=YZ125)、ヘッダ「モデル名称」、
+     model-info の「カラー名称」、空テンプレ行(empty-box)、合計行(suggest-retail, 表示none)。 -->
+<div id="contents-main">
+  <div class="title"><h2>選択部品リスト</h2></div>
+
+  <div class="model-info">
+    <div class="model-info-table">
+      <div class="val-model-name">YZ125 </div>
+      <div class="model-info-table-cell">
+        <dl>
+          <dt class="model-year">モデル年度</dt><dd class="val-model-year">2027</dd>
+          <dt class="color-name">カラー名称</dt><dd class="val-color-name">ﾃﾞｲ-ﾌﾟ ﾊﾟ-ﾌﾟﾘﾂｼﾕ ﾌﾞﾙ- ｿﾘﾂﾄﾞ E</dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+
+  <table class="hidden-xs" id="flat-table">
+    <thead>
+      <tr>
+        <th class="model-name" style="display: none;">モデル名称</th>
+        <th class="part-no">部品番号</th>
+        <th class="part-name">部品名称</th>
+        <th class="order-qty display-num">個数</th>
+        <th class="stock-exists">在庫</th>
+        <th class="retail-w-tax display-num">希望小売価格(税込)</th>
+        <th class="part-remarks">部品注釈</th>
+        <th class="col-dummy">&nbsp;</th>
+      </tr>
+    </thead>
+    <tbody id="parts-body">
+      <tr class="empty-box" id="parts-row">
+        <td class="model-name" style="display: none;"></td>
+        <td class="part-no flap-none"></td>
+        <td class="part-name"></td>
+        <td class="order-qty display-num"></td>
+        <td class="stock-exists"></td>
+        <td class="retail-w-tax display-num"></td>
+        <td class="part-remarks"></td>
+        <td class="col-empty">&nbsp;</td>
+      </tr>
+      <tr class="">
+        <td class="model-name" style="display: none;">YZ125</td>
+        <td class="part-no flap-none">5NY-14459-00</td>
+        <td class="part-name">ﾎﾙﾀﾞ,ｶﾞｲﾄﾞ</td>
+        <td class="order-qty display-num">1</td>
+        <td class="stock-exists">あり</td>
+        <td class="retail-w-tax display-num">1,056</td>
+        <td class="part-remarks"></td>
+        <td class="col-empty">&nbsp;</td>
+      </tr>
+      <tr class="">
+        <td class="model-name" style="display: none;">YZ125</td>
+        <td class="part-no flap-none">4KN-2836B-11</td>
+        <td class="part-name">ﾁﾕｰﾆﾝｸﾞﾌｵｰｸﾏｰｸ</td>
+        <td class="order-qty display-num">1</td>
+        <td class="stock-exists">あり</td>
+        <td class="retail-w-tax display-num">1,760</td>
+        <td class="part-remarks"></td>
+        <td class="col-empty">&nbsp;</td>
+      </tr>
+      <tr class="">
+        <td class="model-name" style="display: none;">YZ125</td>
+        <td class="part-no flap-none">95E32-06016</td>
+        <td class="part-name">ﾎﾞﾙﾄ､ﾌﾗﾝｼﾞ ﾃﾞｲｰﾌﾟﾘｾｽ</td>
+        <td class="order-qty display-num">4</td>
+        <td class="stock-exists">あり</td>
+        <td class="retail-w-tax display-num">105</td>
+        <td class="part-remarks"></td>
+        <td class="col-empty">&nbsp;</td>
+      </tr>
+      <tr class="suggest-retail" id="parts-retail" style="display: none;">
+        <td class="model-name" style="display: none;"></td>
+        <td class="part-no"></td>
+        <td class="part-name"></td>
+        <td class="order-qty display-num"></td>
+        <td class="stock-exists"></td>
+        <td class="suggest-retail-w-tax-grand-total retail-w-tax">希望小売価格(税込)総合計</td>
+        <td class="part-remarks"></td>
+        <td class="col-empty">&nbsp;</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- モバイル版(通常はCSSでdisplay:none)。PCの #flat-table が先に採用されるため無視される想定 -->
+  <table id="sp-table" class="visible-xs-block" style="display: none;">
+    <tbody>
+      <tr><th class="part-no flap-none">部品番号</th><td class="part-no flap-none">5NY-14459-00</td></tr>
+      <tr><th class="part-name flap-none">部品名称</th><td class="part-name">ﾎﾙﾀﾞ,ｶﾞｲﾄﾞ</td></tr>
+    </tbody>
+  </table>
+</div>

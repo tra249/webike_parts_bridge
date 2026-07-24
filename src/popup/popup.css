@@ -1,0 +1,134 @@
+* {
+  box-sizing: border-box;
+}
+body {
+  width: 380px;
+  margin: 0;
+  padding: 12px;
+  font-family: system-ui, -apple-system, "Segoe UI", "Hiragino Sans", "Meiryo", sans-serif;
+  font-size: 13px;
+  color: #1a1a1a;
+  background: #fff;
+}
+h1 {
+  margin: 0 0 2px;
+  font-size: 15px;
+}
+.meta {
+  margin: 0 0 10px;
+  color: #666;
+  font-size: 11px;
+}
+.hidden {
+  display: none;
+}
+.empty {
+  padding: 16px;
+  background: #f4f6f9;
+  border-radius: 8px;
+  line-height: 1.6;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 8px;
+}
+th,
+td {
+  padding: 5px 6px;
+  border-bottom: 1px solid #e3e6ea;
+  text-align: left;
+  vertical-align: middle;
+}
+th {
+  font-size: 11px;
+  color: #555;
+  background: #f7f8fa;
+}
+.qty-col {
+  width: 56px;
+  text-align: center;
+}
+td .qty-input {
+  width: 48px;
+  padding: 3px;
+  text-align: center;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+.pn {
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  font-weight: 600;
+}
+.name {
+  color: #444;
+  font-size: 12px;
+}
+.actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin: 6px 0;
+}
+.btn {
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  background: #0b63ce;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.btn:hover {
+  background: #0950a8;
+}
+.btn-danger {
+  background: #c0392b;
+}
+.btn-danger:hover {
+  background: #a5301f;
+}
+.del-btn {
+  padding: 2px 8px;
+  color: #c0392b;
+  background: transparent;
+  border: 1px solid #d9b3ae;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.hint {
+  margin-top: 10px;
+  padding: 8px;
+  font-size: 11px;
+  line-height: 1.6;
+  color: #555;
+  background: #fff8e6;
+  border-radius: 6px;
+}
+.advanced {
+  margin-top: 10px;
+  font-size: 12px;
+}
+.advanced summary {
+  cursor: pointer;
+  color: #0b63ce;
+}
+.advanced label {
+  display: block;
+  margin: 8px 0 2px;
+  font-size: 11px;
+  color: #555;
+}
+.advanced input {
+  width: 100%;
+  padding: 5px;
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+.ov-status {
+  font-size: 11px;
+  color: #1b8a3a;
+}

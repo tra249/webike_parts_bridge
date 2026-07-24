@@ -1,0 +1,29 @@
+{
+  "name": "webike_parts_bridge",
+  "version": "0.1.0",
+  "description": "ヤマハ発動機PC版パーツカタログの選択部品一覧をWebike純正部品注文ページへ転記するChrome拡張",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "gen:icons": "node scripts/gen-icons.mjs",
+    "pack": "node scripts/pack.mjs",
+    "release": "npm run gen:icons && npm run build && npm run pack"
+  },
+  "devDependencies": {
+    "@crxjs/vite-plugin": "^2.0.0",
+    "@types/chrome": "^0.0.287",
+    "@types/node": "^22.10.5",
+    "archiver": "^7.0.1",
+    "jsdom": "^25.0.1",
+    "sharp": "^0.35.3",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.5",
+    "vitest": "^2.1.8"
+  }
+}
