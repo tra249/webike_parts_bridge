@@ -1,0 +1,39 @@
+<!--
+  【推定構造】カワサキ Kawasaki ONLINE SHOP cart.aspx（買い物かご＝集約された選択部品リスト）。
+  報告書 §2-3(案B)。商品が入った状態の実DOMは未確認 → 実機で差し替えること。
+  data-part-number が無い集約テーブルを想定し、テーブル検出(フォールバックB)が効くかを検証する用途。
+  フレームNo BJ250F-123456 を紛れ込ませ、品番として誤検出しないことも確認する。
+-->
+<div class="cart-container">
+  <p>車体番号（フレームNo）: BJ250F-123456</p>
+  <table class="cart-list">
+    <thead>
+      <tr>
+        <th>部品番号</th>
+        <th>部品名</th>
+        <th>数量</th>
+        <th>単価</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>11004-1224</td>
+        <td>ｶﾞｽｹｯﾄ,ﾍｯﾄﾞ</td>
+        <td>1</td>
+        <td>¥3,200</td>
+      </tr>
+      <tr>
+        <td>92150-1327</td>
+        <td>ﾎﾞﾙﾄ,ｿｹｯﾄ</td>
+        <td>4</td>
+        <td>¥180</td>
+      </tr>
+      <tr>
+        <td>600A1000</td>
+        <td>ﾜｯｼｬ</td>
+        <td>2</td>
+        <td>¥60</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

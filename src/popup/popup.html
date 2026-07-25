@@ -3,19 +3,20 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ヤマハ→Webike 転記</title>
+    <title>純正部品 品番ブリッジ →Webike</title>
     <link rel="stylesheet" href="popup.css" />
   </head>
   <body>
     <header>
-      <h1>ヤマハ→Webike 転記</h1>
+      <h1>純正部品 品番ブリッジ →Webike</h1>
       <p id="meta" class="meta"></p>
     </header>
 
     <section id="empty" class="empty hidden">
       取込済みの部品がありません。<br />
-      ヤマハPC版パーツカタログの「選択部品一覧」を開き、右下の
-      <b>「選択部品を取込」</b>ボタンを押してください。
+      対応メーカーのパーツカタログで部品リストを開き、右下の
+      <b>「選択部品を取込」</b>ボタンを押してください。<br />
+      対応: <b>ヤマハ</b>(ypec) / <b>カワサキ</b>(ONLINE SHOP)
     </section>
 
     <section id="list-section" class="hidden">
@@ -37,7 +38,8 @@
 
     <section class="hint">
       <p>
-        使い方: ①ヤマハで取込 → ②Webike純正部品ページを開き右下の<b>「取込部品を転記」</b>。
+        使い方: ①メーカーのカタログで取込 → ②Webike純正部品ページを開き右下の<b>「取込部品を転記」</b>。
+        転記時にメーカーも取込元に合わせて自動選択します。
         送信は自動化しません（内容確認のうえ手動で送信してください）。
       </p>
     </section>
@@ -45,6 +47,10 @@
     <details class="advanced">
       <summary>詳細設定（自動検出が外れる場合のセレクタ上書き）</summary>
       <label>ヤマハ 選択部品一覧テーブル<input id="ov-yamaha" type="text" placeholder="例: table.selected-parts" /></label>
+      <label>カワサキ 選択部品/カートテーブル<input id="ov-kawasaki" type="text" placeholder="例: table.cart-list" /></label>
+      <!-- KTM 対応は一旦無効化（Webike に KTM 品番入力フォームが無いため）。再有効化時にコメント解除:
+      <label>KTM Selected Items テーブル<input id="ov-ktm" type="text" placeholder="例: table.selected-items" /></label>
+      -->
       <label>Webike 品番入力欄<input id="ov-webike-part" type="text" placeholder='例: input[name^="part_no"]' /></label>
       <label>Webike 数量入力欄<input id="ov-webike-qty" type="text" placeholder='例: input[name^="qty"]' /></label>
       <label>Webike メーカー選択<input id="ov-webike-maker" type="text" placeholder="例: select#maker" /></label>

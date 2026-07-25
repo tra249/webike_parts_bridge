@@ -2,7 +2,7 @@ import './ui.css';
 import { detectWebikeForm } from '../shared/detect';
 import { getCaptureSession, getSelectorOverrides } from '../shared/storage';
 import { setNativeValue, selectOptionByLabel, showToast, mountPersistentButton } from '../shared/dom';
-import { YAMAHA_MAKER_LABELS } from '../shared/constants';
+import { MAKER_LABELS } from '../shared/constants';
 import type { SelectorOverrides } from '../shared/types';
 
 /** Webike純正部品ページ: 取込リストを一括入力するフローティングボタンを注入。送信はしない。 */
@@ -36,9 +36,16 @@ async function fill(btn: HTMLButtonElement): Promise<void> {
     await ensureRows(session.parts.length, overrides);
     const form = detectWebikeForm(document, overrides);
 
-    // メーカー選択（ヤマハ）
+    // メーカー選択（取込元メーカーに応じて。古いセッションには maker が無いので既定ヤマハ）
+    const maker = session.maker ?? 'yamaha';
     if (form.makerSelect) {
-      selectOptionByLabel(form.makerSelect, YAMAHA_MAKER_LABELS);
+      const selected = selectOptionByLabel(form.makerSelect, MAKER_LABELS[maker]);
+      if (!selected) {
+        showToast(
+          `Webikeのメーカー選択で「${MAKER_LABELS[maker][0]}」を自動選択できませんでした。\nメーカーは手動で選んでから品番を確認してください。`,
+          'error',
+        );
+      }
     }
 
     if (form.partInputs.length === 0) {

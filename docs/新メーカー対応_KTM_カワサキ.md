@@ -1,5 +1,12 @@
 # 新メーカー対応調査 — KTM グループ / カワサキ
 
+> **実装ステータス（2026-07-24 実機検証後・更新）**:
+> - **カワサキ = 有効**。分解図 `partsillust.aspx` の「選択」ボタン（`data-part-number` 方式・案A）からの取込→Webike転記が**実機で動作確認済み**。
+>   - ⚠️ **買い物かご `cart.aspx` からの取込は NG（案B は実機で機能せず）**。当面はカワサキの取込元は「分解図の購入フォーム」に限る運用。cart 経路を活かすには `cart.aspx` の実DOM確認（§2-7-1）が必須。manifest の `cart/*` match と `detectKawasakiParts` の案Bフォールバックはコード上は温存。
+> - **KTM = 一旦コメントアウト（無効化）**。取込自体（`SelectedItems` 検出）は動いたが、**転記先 Webike に KTM 純正部品の「品番入力による見積」フォームが存在しない（在庫部品の発注のみ）**ことが実機で判明し、ブリッジが成立しない。→ manifest の KTM content_scripts エントリ・popup の KTM 上書き欄・empty案内をコメントアウト。`detectKtmSelectedParts`・`constants` の KTM 定義・`content/ktm.ts`・KTMテストは温存（Webike が品番入力に対応したら manifest ブロックのコメントを外すだけで再有効化可）。§3-7-7 の「Webikeメーカー選択に存在するか」は「メーカー選択肢はあるが品番見積フォームが無い」が結論。
+> - fixture と品番正規表現は依然 §5 の「⚠️推定」。カワサキ標準品番（data属性方式なので取込自体は属性値をそのまま使い正規表現非依存）は動作したが、`cart` 経路や偽陽性判定用の正規表現は実データで未確定。
+> - `npm run build`＋`npm test`（22件）通過。
+>
 > 目的: webike_parts_bridge 拡張の「取込元メーカー」を **ヤマハ以外**へ拡張するための調査結果と実装方針。
 > 対象読者: 後でこのファイルを読んで実装に入る担当（Claude/opus）。
 > 調査日: 2026-07-22。一次情報は WebFetch / curl の生HTML・生成PDFで確認。**推定と確認済みを必ず区別**して記述している。

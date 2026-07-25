@@ -1,11 +1,11 @@
-import type { CapturedPart, SelectorOverrides } from './types';
+import type { CapturedPart, Maker, SelectorOverrides } from './types';
 import {
   HEADER_NAME,
   HEADER_PART_NUMBER,
   HEADER_QTY,
-  isPartNumber,
+  isPartNumberFor,
+  MAKER_LABELS,
   normalizePartNumber,
-  YAMAHA_MAKER_LABELS,
 } from './constants';
 
 /** 検出はテスト可能なよう Document/Element を引数で受ける（jsdomで単体テスト） */
@@ -86,6 +86,7 @@ function parseQty(raw: string): number {
 function extractParts(
   rows: HTMLTableRowElement[],
   cols: { partCol: number; nameCol: number; qtyCol: number },
+  maker: Maker,
 ): CapturedPart[] {
   const parts: CapturedPart[] = [];
   for (const row of rows) {
@@ -94,8 +95,8 @@ function extractParts(
 
     // 品番列の決定: ヘッダで判明していればそれ、無ければ行内で品番正規表現に合うセルを探す
     let partIdx = cols.partCol;
-    if (partIdx < 0 || partIdx >= cells.length || !isPartNumber(text(cells[partIdx]))) {
-      partIdx = cells.findIndex((c) => isPartNumber(text(c)));
+    if (partIdx < 0 || partIdx >= cells.length || !isPartNumberFor(text(cells[partIdx]), maker)) {
+      partIdx = cells.findIndex((c) => isPartNumberFor(text(c), maker));
     }
     if (partIdx < 0) continue;
 
@@ -128,19 +129,21 @@ function dedupeParts(parts: CapturedPart[]): CapturedPart[] {
 }
 
 /**
- * ヤマハ「選択部品一覧」から部品を検出する。多段フォールバック:
+ * HTMLテーブル群から部品を検出する共通ロジック。多段フォールバック:
  *   (0) override セレクタが指定されていればそのテーブルを最優先
- *   (a) ヘッダに品番+数量語彙を含むテーブル
+ *   (a) ヘッダに品番語彙を含むテーブル
  *   (b) セル内容が品番正規表現にマッチする列を持つテーブル（品番数が最大のもの）
+ * @param maker 品番書式（ハイフン有無・桁数）の判定に使うメーカー
+ * @param overrideTable 手動上書きテーブルのCSSセレクタ（あれば最優先）
  */
-export function detectYamahaSelectedParts(root: Root, overrides?: SelectorOverrides): CapturedPart[] {
+export function detectPartsFromTables(root: Root, maker: Maker, overrideTable?: string): CapturedPart[] {
   // (0) 手動上書き
-  if (overrides?.yamahaTable) {
-    const el = root.querySelector(overrides.yamahaTable);
+  if (overrideTable) {
+    const el = root.querySelector(overrideTable);
     const table = el?.closest('table') ?? (el instanceof HTMLTableElement ? el : null);
     if (table) {
       const cols = resolveColumns(headerCells(table));
-      const parts = extractParts(bodyRows(table), cols);
+      const parts = extractParts(bodyRows(table), cols, maker);
       if (parts.length > 0) return parts;
     }
   }
@@ -151,7 +154,7 @@ export function detectYamahaSelectedParts(root: Root, overrides?: SelectorOverri
   for (const table of tables) {
     const cols = resolveColumns(headerCells(table));
     if (cols.partCol >= 0) {
-      const parts = extractParts(bodyRows(table), cols);
+      const parts = extractParts(bodyRows(table), cols, maker);
       if (parts.length > 0) return parts;
     }
   }
@@ -160,10 +163,72 @@ export function detectYamahaSelectedParts(root: Root, overrides?: SelectorOverri
   let best: CapturedPart[] = [];
   for (const table of tables) {
     const cols = resolveColumns(headerCells(table)); // name/qty列だけでも活かす
-    const parts = extractParts(bodyRows(table), { ...cols, partCol: -1 });
+    const parts = extractParts(bodyRows(table), { ...cols, partCol: -1 }, maker);
     if (parts.length > best.length) best = parts;
   }
   return best;
+}
+
+/**
+ * ヤマハ ypec「選択部品一覧」から部品を検出する。テーブル多段フォールバック。
+ */
+export function detectYamahaSelectedParts(root: Root, overrides?: SelectorOverrides): CapturedPart[] {
+  return detectPartsFromTables(root, 'yamaha', overrides?.yamahaTable);
+}
+
+/**
+ * KTM SparePartsFinder「Selected Items」から部品を検出する。
+ * KTM品番はハイフン無しで偽陽性が出やすいため、ヘッダ語彙(Part Number/Article)で
+ * 列を特定する経路を最優先する（detectPartsFromTables の (a)）。
+ */
+export function detectKtmSelectedParts(root: Root, overrides?: SelectorOverrides): CapturedPart[] {
+  return detectPartsFromTables(root, 'ktm', overrides?.ktmTable);
+}
+
+/**
+ * カワサキ Kawasaki ONLINE SHOP から部品を検出する。
+ *   (0) override セレクタが指定されていればそのテーブル
+ *   (A) partsillust.aspx の「選択」ボタン `.btn-select[data-part-number]`（data属性優先＝最堅牢）
+ *   (B) cart.aspx 等のテーブル検出にフォールバック
+ */
+export function detectKawasakiParts(root: Root, overrides?: SelectorOverrides): CapturedPart[] {
+  // (0) 手動上書きテーブル
+  if (overrides?.kawasakiTable) {
+    const parts = detectPartsFromTables(root, 'kawasaki', overrides.kawasakiTable);
+    if (parts.length > 0) return parts;
+  }
+
+  // (A) data-part-number 属性（分解図 partsillust.aspx の「選択」ボタン）
+  const byData = extractKawasakiByDataAttr(root);
+  if (byData.length > 0) return byData;
+
+  // (B) テーブル検出（cart.aspx 等）
+  return detectPartsFromTables(root, 'kawasaki');
+}
+
+/** カワサキ: `[data-part-number]` を走査して品番・数量・部品名を抽出（テキストパース不要） */
+function extractKawasakiByDataAttr(root: Root): CapturedPart[] {
+  const nodes = Array.from(root.querySelectorAll<HTMLElement>('[data-part-number]'));
+  const parts: CapturedPart[] = [];
+  for (const node of nodes) {
+    const raw = node.getAttribute('data-part-number') ?? '';
+    const partNumber = normalizePartNumber(raw);
+    if (!partNumber) continue;
+    const qtyRaw = node.getAttribute('data-unit-qty') ?? '';
+    const quantity = qtyRaw ? parseQty(qtyRaw) : 1;
+    // 部品名: 同じ行(tr)から、そのテーブルのヘッダで判明する「部品名」列を拾う
+    const row = node.closest('tr') as HTMLTableRowElement | null;
+    let partName: string | undefined;
+    if (row) {
+      const table = row.closest('table') as HTMLTableElement | null;
+      const cols = table ? resolveColumns(headerCells(table)) : { partCol: -1, nameCol: -1, qtyCol: -1 };
+      const cells = rowCells(row);
+      const nameCell = cols.nameCol >= 0 && cols.nameCol < cells.length ? cells[cols.nameCol] : undefined;
+      if (nameCell && !isHidden(nameCell)) partName = text(nameCell) || undefined;
+    }
+    parts.push({ partNumber, partName, quantity });
+  }
+  return dedupeParts(parts);
 }
 
 // ---- Webike 側フォーム検出 ----
@@ -203,11 +268,13 @@ export function detectWebikeForm(root: Root, overrides?: SelectorOverrides): Web
     makerSelect = root.querySelector<HTMLSelectElement>(overrides.webikeMakerSelect);
   }
   if (!makerSelect) {
+    // いずれかのメーカー(ヤマハ/カワサキ/KTM)の option を含む select をメーカー選択とみなす
+    const allLabels = Object.values(MAKER_LABELS).flat();
     const selects = Array.from(root.querySelectorAll('select')) as HTMLSelectElement[];
     makerSelect =
       selects.find((s) =>
         Array.from(s.options).some((o) =>
-          YAMAHA_MAKER_LABELS.some(
+          allLabels.some(
             (l) => o.text.toLowerCase().includes(l.toLowerCase()) || o.value.toLowerCase().includes(l.toLowerCase()),
           ),
         ),

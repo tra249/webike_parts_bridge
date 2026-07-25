@@ -2,8 +2,13 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { describe, it, expect } from 'vitest';
-import { isPartNumber, normalizePartNumber, YAMAHA_MAKER_LABELS } from '../src/shared/constants';
-import { detectYamahaSelectedParts, detectWebikeForm } from '../src/shared/detect';
+import { isPartNumber, isPartNumberFor, normalizePartNumber, YAMAHA_MAKER_LABELS } from '../src/shared/constants';
+import {
+  detectYamahaSelectedParts,
+  detectKawasakiParts,
+  detectKtmSelectedParts,
+  detectWebikeForm,
+} from '../src/shared/detect';
 import { setNativeValue, selectOptionByLabel } from '../src/shared/dom';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -80,6 +85,68 @@ describe('ヤマハ 選択部品一覧の検出', () => {
     expect(parts).toHaveLength(1);
     expect(parts[0].partNumber).toBe('1WS-E1311-00');
     expect(parts[0].quantity).toBe(3);
+  });
+});
+
+describe('カワサキ 品番正規表現（推定・要実機確認）', () => {
+  it('標準品番 5桁-4桁 を受理', () => {
+    expect(isPartNumberFor('11004-1224', 'kawasaki')).toBe(true);
+    expect(isPartNumberFor('92150-1327', 'kawasaki')).toBe(true);
+  });
+  it('汎用ハードウェア 3桁+英字+4桁 を受理', () => {
+    expect(isPartNumberFor('600A1000', 'kawasaki')).toBe(true);
+    expect(isPartNumberFor('132G0630', 'kawasaki')).toBe(true);
+  });
+  it('フレームNo(車体番号)は品番として弾く', () => {
+    expect(isPartNumberFor('BJ250F-123456', 'kawasaki')).toBe(false);
+  });
+  it('価格・数量は誤マッチしない', () => {
+    expect(isPartNumberFor('¥3,200', 'kawasaki')).toBe(false);
+    expect(isPartNumberFor('4', 'kawasaki')).toBe(false);
+  });
+});
+
+describe('KTM 品番正規表現（推定・要実機確認）', () => {
+  it('A始まり+11桁+英字2 / 数字11桁 / 数字10桁+英字 を受理', () => {
+    expect(isPartNumberFor('A49003001000EB', 'ktm')).toBe(true);
+    expect(isPartNumberFor('79003003000', 'ktm')).toBe(true);
+    expect(isPartNumberFor('0035080206S', 'ktm')).toBe(true);
+  });
+  it('部品名や短い数字は誤マッチしない', () => {
+    expect(isPartNumberFor('CLUTCH COVER', 'ktm')).toBe(false);
+    expect(isPartNumberFor('2', 'ktm')).toBe(false);
+  });
+  it('ヤマハ品番(ハイフン式)はKTMとして弾く', () => {
+    expect(isPartNumberFor('1WS-E1311-00', 'ktm')).toBe(false);
+  });
+});
+
+describe('カワサキ 選択部品の検出', () => {
+  it('分解図の data-part-number / data-unit-qty から抽出（案A）', () => {
+    const doc = render(fixture('kawasaki_partsillust.html'));
+    const parts = detectKawasakiParts(doc);
+    expect(parts.map((p) => p.partNumber)).toEqual(['11004-1224', '92002-1143', '92150-1327', '600A1000']);
+    expect(parts.find((p) => p.partNumber === '92150-1327')?.quantity).toBe(4);
+    expect(parts.find((p) => p.partNumber === '600A1000')?.quantity).toBe(2);
+    expect(parts.find((p) => p.partNumber === '11004-1224')?.partName).toBe('ｶﾞｽｹｯﾄ,ﾍｯﾄﾞ');
+  });
+
+  it('買い物かごテーブルから抽出（案B）＋フレームNoを拾わない', () => {
+    const doc = render(fixture('kawasaki_cart.html'));
+    const parts = detectKawasakiParts(doc);
+    expect(parts.map((p) => p.partNumber)).toEqual(['11004-1224', '92150-1327', '600A1000']);
+    expect(parts.some((p) => p.partNumber.includes('BJ250F'))).toBe(false);
+    expect(parts.find((p) => p.partNumber === '92150-1327')?.quantity).toBe(4);
+  });
+});
+
+describe('KTM Selected Items の検出', () => {
+  it('ヘッダ語彙(Part Number)で列特定して抽出', () => {
+    const doc = render(fixture('ktm_selected_items.html'));
+    const parts = detectKtmSelectedParts(doc);
+    expect(parts.map((p) => p.partNumber)).toEqual(['A49003001000EB', '79003003000', '0035080206S']);
+    expect(parts.find((p) => p.partNumber === '79003003000')?.quantity).toBe(2);
+    expect(parts.find((p) => p.partNumber === 'A49003001000EB')?.partName).toBe('CLUTCH COVER');
   });
 });
 

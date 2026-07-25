@@ -1,15 +1,15 @@
 import './ui.css';
-import { detectYamahaSelectedParts } from '../shared/detect';
+import { detectKawasakiParts } from '../shared/detect';
 import { getSelectorOverrides, setCaptureSession } from '../shared/storage';
 import { showToast, mountPersistentButton } from '../shared/dom';
 import type { CaptureSession } from '../shared/types';
 
-/** ヤマハPC版パーツカタログ: 「選択部品一覧」を取り込むフローティングボタンを注入 */
+/** カワサキ Kawasaki ONLINE SHOP: 分解図/カートの選択部品を取り込むフローティングボタンを注入 */
 
 const BTN_ID = 'wpb-capture-btn';
 
 function findModelName(): string | undefined {
-  // ページタイトルや見出しから車両モデル名を拾えれば添える（取れなくても可）
+  // 見出しやページタイトルから車種名を拾えれば添える（取れなくても可）
   const h = document.querySelector('h1, .model-name, [class*="model"]');
   const t = h?.textContent?.trim();
   return t && t.length <= 60 ? t : undefined;
@@ -19,10 +19,10 @@ async function capture(btn: HTMLButtonElement): Promise<void> {
   btn.disabled = true;
   try {
     const overrides = await getSelectorOverrides();
-    const parts = detectYamahaSelectedParts(document, overrides);
+    const parts = detectKawasakiParts(document, overrides);
     if (parts.length === 0) {
       showToast(
-        '選択部品一覧を検出できませんでした。\n「選択部品一覧」を表示した状態で再度お試しください。\n（外れる場合は拡張ポップアップでセレクタを上書きできます）',
+        '選択部品を検出できませんでした。\n分解図で「選択」した部品がある状態、または買い物かごを表示した状態でお試しください。\n（外れる場合は拡張ポップアップでセレクタを上書きできます）',
         'error',
       );
       return;
@@ -31,7 +31,7 @@ async function capture(btn: HTMLButtonElement): Promise<void> {
       parts,
       capturedAt: new Date().toISOString(),
       sourceModel: findModelName(),
-      maker: 'yamaha',
+      maker: 'kawasaki',
     };
     await setCaptureSession(session);
     const total = parts.reduce((s, p) => s + p.quantity, 0);

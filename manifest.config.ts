@@ -3,7 +3,7 @@ import pkg from './package.json' with { type: 'json' };
 
 export default defineManifest({
   manifest_version: 3,
-  name: '【非公式】純正部品 品番ブリッジ (ヤマハ→Webike)',
+  name: '【非公式】純正部品 品番ブリッジ (ヤマハ/カワサキ→Webike)',
   version: pkg.version,
   description: pkg.description,
   icons: {
@@ -30,6 +30,30 @@ export default defineManifest({
       js: ['src/content/yamaha.ts'],
       run_at: 'document_idle',
     },
+    {
+      // カワサキ Kawasaki ONLINE SHOP（分解図 partsillust / 買い物かご cart の取込元）
+      matches: [
+        'https://kawasaki-onlineshop.jp/shop/partscatalog/*',
+        'https://kawasaki-onlineshop.jp/shop/cart/*',
+      ],
+      js: ['src/content/kawasaki.ts'],
+      run_at: 'document_idle',
+    },
+    // --- KTM 対応は一旦無効化（2026-07-24） ---
+    // 取込自体は動作したが、転記先 Webike には KTM 純正部品の「品番入力による見積」フォームが存在せず
+    // （在庫部品の発注のみ）、ブリッジが成立しないため content script の注入を停止する。
+    // 検出ロジック(detectKtmSelectedParts)・定数・content/ktm.ts・テストは温存。Webike が品番入力に対応したら
+    // 下記ブロックのコメントを外すだけで再有効化できる。
+    // {
+    //   // KTM / Husqvarna / GAS GAS SparePartsFinder（Selected Items の取込元・3ブランド共通システム）
+    //   matches: [
+    //     'https://sparepartsfinder.ktm.com/*',
+    //     'https://sparepartsfinder.husqvarna-motorcycles.com/*',
+    //     'https://sparepartsfinder.gasgas.com/*',
+    //   ],
+    //   js: ['src/content/ktm.ts'],
+    //   run_at: 'document_idle',
+    // },
     {
       // Webike 純正部品 見積・注文ページ（転記先）
       matches: ['https://www.webike.net/wbs/genuine-estimate-*'],

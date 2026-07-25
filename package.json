@@ -1,7 +1,7 @@
 {
   "name": "webike_parts_bridge",
-  "version": "0.1.0",
-  "description": "ヤマハ発動機PC版パーツカタログの選択部品一覧をWebike純正部品注文ページへ転記するChrome拡張",
+  "version": "0.2.0",
+  "description": "ヤマハ/カワサキの純正部品カタログで選んだ品番をWebike純正部品注文ページへ転記するChrome拡張",
   "type": "module",
   "private": true,
   "scripts": {
